@@ -40,3 +40,21 @@
   32 Funde in 6 Sekunden, darunter IDOR (fremde Rechnung mit IBAN), offene .env, CORS mit Cookies, XSS.
 - Ute-Fischer-Seite: nicht auffindbar (kein Repo, kein Artifact) → Nutzer muss sie bereitstellen.
 - Klaus Clipper: läuft lokal beim Nutzer → Test muss dort laufen (siehe CLAUDE.md).
+
+# Drittes Gespräch (23.11.2026, Lastprobe + Remote Control)
+
+## Gebaut
+- Adaptive Lastprobe (klaushackt/lastprobe.py, CLI-Befehl `lastprobe`): AIMD-Loop
+  beobachten/bewerten/anpassen/merken, nur loopback. Live demonstriert (robustes Ziel: kein
+  Bruch bis 37/s; schwaches Ziel: Knie bei 18/s, Latenz 69→407 ms, pendelt auf 17/s).
+- Gelernte Rate wird in wissen.db (Tabelle `tempo`) gespeichert und als Startrate wiederverwendet.
+
+## Wichtig geklärt
+- Ich kann das Modell nicht selbst umschalten; nur Nutzer via /model. Opus-4.8-Wechsel war System-Fallback.
+- Klaus Clipper ist aus der Cloud NICHT erreichbar (eigene Erklärung, kein Vorspielen von Funden).
+- Remote Control: Nutzer gab Ordner „Ideen FBA" auf DESKTOP-QBH3K1F frei, aber der Windows-PC bietet ihn
+  Cloud-Sessions nicht an (cannot_be_used / not_available). Vermutlich Claude-App-Update nötig.
+
+## Nächster Schritt
+- Nutzer: Claude-App auf Windows-PC aktualisieren, Ordner neu freigeben, Klaus-Port nennen.
+- Dann: request_computer_folder, auf dem PC Black-Box-Scan (--nur web) + lastprobe gegen Klaus.

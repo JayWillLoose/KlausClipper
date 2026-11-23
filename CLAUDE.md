@@ -33,14 +33,30 @@ Funde mit stabilem Fingerabdruck (ohne Zeilennummer) → Nutzer markiert bestät
 Fehlalarme werden nie wieder gemeldet; Regeln mit mehr Fehlalarmen als Treffern schalten sich ab;
 Technik-Statistik steuert die Reihenfolge; Abdeckung verhindert doppelte KI-Reviews unveränderter Dateien.
 
+## Lastprobe (lastprobe.py) – NEU
+
+Adaptiver AIMD-Loop: beobachten → bewerten → anpassen (additiv +2 / bei Ärger ×0.5) → merken (wissen.db
+Tabelle `tempo`). Findet die höchste sichere Rate und den Bruchpunkt + Diagnose (Timeouts/Resets/429/5xx/
+Latenz-Knie). `python -m klaushackt lastprobe --scope ... --dauer 5m --start 9 --max 120`.
+NUR gegen loopback (127.0.0.1/localhost) erlaubt; fremde Ziele bleiben bei ≤10/s. Live getestet:
+robustes Ziel → kein Bruch bis 37/s; schwaches Ziel → Knie bei 18/s (Latenz 69→407 ms), pendelt auf 17/s.
+
 ## Offene Punkte (Stand 23.11.2026)
 
-- **Ute-Fischer-Seite**: Quellcode liegt in keinem für Claude erreichbaren Repo und in keinem Artifact.
-  Nutzer muss Repo/Link/Dateien bereitstellen, dann Audit + Fixes.
-- **Klaus Clipper Black-Box-Test**: Klaus läuft lokal auf dem PC des Nutzers (Dashboard). Von der Cloud
-  aus nicht erreichbar. Plan: Nutzer startet Klaus, legt `scopes/klaus-clipper.toml` mit
-  `urls = ["http://127.0.0.1:<port>/"]` an und führt `--nur web` aus – oder verbindet seinen PC per Remote Control.
-- OSV-API ist aus der Cloud-Umgebung blockiert; auf dem PC des Nutzers funktioniert sie.
+- **Klaus Clipper Black-Box-Test** – HAUPTAUFGABE, noch offen. Klaus läuft auf dem Windows-PC des
+  Nutzers (`DESKTOP-QBH3K1F`). Aus der Cloud nicht erreichbar.
+  - Remote Control: Nutzer hat den Ordner **„Ideen FBA"** freigegeben, aber der PC bietet ihn Cloud-
+    Sessions NICHT an (`list_computer_folders` → `cannot_be_used`, reason `not_available`). Wahrscheinlich
+    muss die **Claude-App auf dem Windows-PC aktualisiert** werden, dann wird der Ordner nutzbar.
+  - Sobald ein Ordner unter `folders` (nicht `cannot_be_used`) auftaucht: `request_computer_folder`,
+    dann auf dem PC `scopes/klaus-clipper.toml` (Port eintragen!) mit `start --nur web` + `lastprobe`.
+  - **Klaus-Port ist noch unbekannt** – Nutzer fragen.
+  - Alternative: Nutzer führt die 3 Befehle selbst auf dem PC aus (siehe README / klaus-clipper.toml).
+  - Wichtig: Klaus = reiner Black-Box-Test, KEIN Quellcode (Scope hat `repos = []`).
+- **Modellwechsel**: Ich kann das Modell NICHT selbst umschalten (nur der Nutzer via `/model`). Der kurze
+  Wechsel auf Opus 4.8 war ein automatischer System-Fallback, keine eigene Wahl.
+- **Ute-Fischer-Seite**: weiterhin nicht auffindbar; Nutzer muss Repo/Link/Dateien liefern.
+- OSV-API ist aus der Cloud blockiert; auf dem PC des Nutzers funktioniert sie.
 
 ## Weitere Dokumente
 
