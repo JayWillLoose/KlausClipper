@@ -178,6 +178,50 @@ def cmd_lernen(args) -> int:
     return 0
 
 
+def cmd_lastprobe(args) -> int:
+    import time as _t
+
+    from klaushackt.lastprobe import Lastprobe, ist_loopback
+    from klaushackt.planer import Optik, parse_dauer
+    try:
+        scope = lade_scope(args.scope)
+        dauer = parse_dauer(args.dauer)
+    except (ScopeFehler, ValueError) as e:
+        print(f"✗ {e}", file=sys.stderr)
+        return 2
+    ok, grund = ist_loopback(scope)
+    if not ok:
+        print(f"✗ Lastprobe verweigert: {grund}", file=sys.stderr)
+        return 2
+    o = Optik(sys.stdout.isatty() and not os.environ.get("NO_COLOR"))
+    wissen = _wissen(args)
+    ordner = Path(args.daten) / "".join(c if c.isalnum() or c in "-_" else "_" for c in scope.name)
+    ordner.mkdir(parents=True, exist_ok=True)
+
+    def log(t: str) -> None:
+        print(f"{o.dim(_t.strftime('%H:%M:%S'))}  {t}", flush=True)
+
+    print(o.box("LASTPROBE · " + scope.name, [
+        ("✔", "ziel", scope.urls[0]),
+        ("✔", "start", f"{args.start or 'gemerkt/4'} req/s · additiv +2, bei Ärger ×0.5"),
+        ("✔", "max", f"{args.max:.0f} req/s (nur gegen den eigenen Rechner erlaubt)"),
+        ("✔", "budget", f"{dauer // 60} min"),
+    ], o.ORANGE))
+    erg = Lastprobe(scope, wissen, ordner, dauer, start_rate=args.start, max_rate=args.max, log=log).starte()
+
+    zeilen = [("✔", "sichere rate", f"{erg.sicher_rate:.1f} req/s  (gemerkt)")]
+    if erg.knie_rate:
+        zeilen.append(("!", "knie bei", f"{erg.knie_rate:.1f} req/s – ab hier bricht es"))
+        zeilen.append(("!", "warum", erg.failure_mode))
+    else:
+        zeilen.append(("✔", "kein knie", f"bis {args.max:.0f}/s stabil"))
+    zeilen.append(("✔", "grundlinie", f"p95 {erg.basis_p95_ms:.0f} ms in Ruhe"))
+    zeilen.append(("✔", "protokoll", str(ordner / "lastprobe.jsonl")))
+    print(o.box("ERGEBNIS LASTPROBE", zeilen, o.GRUEN))
+    print(o.dim(f"   >> Trag die sichere Rate in den Scope ein: anfragen_pro_sekunde = {erg.sicher_rate:.0f}"))
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(prog="klaushackt", description="Autorisierte Schwachstellensuche mit Lern-Loop.")
     p.add_argument("--version", action="version", version=f"KlausHackt {__version__}")
@@ -222,6 +266,13 @@ def main(argv: list[str] | None = None) -> int:
     l = sub.add_parser("lernen", help="aus bestätigten Funden neue Regeln lernen")
     l.add_argument("--scope", required=True)
     l.set_defaults(f=cmd_lernen)
+
+    lp = sub.add_parser("lastprobe", help="adaptive Lastprobe: findet die höchste sichere Rate (nur localhost)")
+    lp.add_argument("--scope", required=True, help="Scope mit loopback-URL (127.0.0.1/localhost)")
+    lp.add_argument("--dauer", default="3m", help="Zeitbudget, z. B. 3m, 10m")
+    lp.add_argument("--start", type=float, default=None, help="Startrate in Anfragen/s (Standard: gemerkt oder 4)")
+    lp.add_argument("--max", type=float, default=300.0, help="Obergrenze in Anfragen/s (Deckel 300)")
+    lp.set_defaults(f=cmd_lastprobe)
 
     # Sonderzeichen (✔, █, ║) dürfen auf alten Windows-Codepages nicht abstürzen
     for strom in (sys.stdout, sys.stderr):

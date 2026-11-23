@@ -57,6 +57,9 @@ CREATE TABLE IF NOT EXISTS abdeckung (
 CREATE TABLE IF NOT EXISTS ereignisse (
     id INTEGER PRIMARY KEY AUTOINCREMENT, lauf INTEGER, zeit REAL, text TEXT
 );
+CREATE TABLE IF NOT EXISTS tempo (
+    scope TEXT PRIMARY KEY, rate REAL, basis_p95 REAL, aktualisiert REAL
+);
 """
 
 
@@ -217,4 +220,14 @@ class Wissen:
     def als_geprueft(self, scope: str, objekt: str, art: str, hash_: str, technik: str) -> None:
         self.db.execute("INSERT OR REPLACE INTO abdeckung VALUES (?,?,?,?,?,?)",
                         (scope, objekt, art, hash_, time.time(), technik))
+        self.db.commit()
+
+    # ---------- Gelernte Rate (Lastprobe) ----------
+    def gelerntes_tempo(self, scope: str) -> float | None:
+        r = self.db.execute("SELECT rate FROM tempo WHERE scope=?", (scope,)).fetchone()
+        return float(r["rate"]) if r else None
+
+    def merke_tempo(self, scope: str, rate: float, basis_p95: float) -> None:
+        self.db.execute("INSERT OR REPLACE INTO tempo VALUES (?,?,?,?)",
+                        (scope, rate, basis_p95, time.time()))
         self.db.commit()
