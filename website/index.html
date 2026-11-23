@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>KlausHackt</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="KlausHackt sucht Sicherheitslücken in deiner Software – nur mit Erlaubnis, nur im Scope, nie schneller als erlaubt. Und wird mit jedem Fund besser.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600;700&display=swap">
+<style>
+/* Layout: ein Prüfprotokoll. Hero = echter Lauf im Terminal mit Takt-Anzeige,
+   danach Scope-Dokument, Schwere-Skala, Lern-Schleife, Leitplanken, Schnellstart. */
+:root{
+  --bg:#f1f4f3; --flaeche:#ffffff; --tinte:#11222a; --leise:#56686f; --linie:#d3dcda;
+  --signal:#e2600b; --signal-weich:#fde9da; --gut:#1d8656;
+  --term-bg:#0f1d23; --term-tinte:#d7e3e0; --term-leise:#7f959b;
+  --s-kritisch:#c4213f; --s-hoch:#d9531e; --s-mittel:#b88300; --s-niedrig:#2b72b3; --s-info:#76878d;
+  --f-display:"Archivo",system-ui,sans-serif; --f-text:"Inter",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0b161b; --flaeche:#11232a; --tinte:#e4ecea; --leise:#91a5aa; --linie:#223b44;
+  --signal:#ff8a3d; --signal-weich:#2d1d10; --gut:#43c68b;
+  --term-bg:#060e12; --term-tinte:#d7e3e0; --term-leise:#7f959b;
+  --s-kritisch:#ff5470; --s-hoch:#ff7d45; --s-mittel:#f0b429; --s-niedrig:#5aa8f0; --s-info:#8fa1a6;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0b161b; --flaeche:#11232a; --tinte:#e4ecea; --leise:#91a5aa; --linie:#223b44;
+  --signal:#ff8a3d; --signal-weich:#2d1d10; --gut:#43c68b;
+  --term-bg:#060e12; --term-tinte:#d7e3e0; --term-leise:#7f959b;
+  --s-kritisch:#ff5470; --s-hoch:#ff7d45; --s-mittel:#f0b429; --s-niedrig:#5aa8f0; --s-info:#8fa1a6;
+  color-scheme:dark}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--bg);color:var(--tinte);font:16px/1.6 var(--f-text);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:0 72px}
+.w{max-width:1120px;margin:0 auto}
+h1,h2,h3{font-family:var(--f-display);margin:0;line-height:1.05;text-wrap:balance}
+h2{font-size:clamp(28px,4.6vw,44px);font-weight:900;letter-spacing:-.02em}
+h3{font-size:19px;font-weight:700}
+p{margin:0}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--signal);outline-offset:3px;border-radius:4px}
+.mono{font-family:var(--f-mono)}
+.eb{font:600 12px/1 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--signal)}
+.le{color:var(--leise)}
+section{display:grid;gap:28px;padding-block:72px 0}
+.kopf{display:grid;gap:14px;max-width:720px}
+.kopf p{font-size:18px;color:var(--leise)}
+
+/* ---------- Navigation ---------- */
+.nav{display:flex;justify-content:space-between;align-items:center;gap:16px;padding-block:22px;flex-wrap:wrap}
+.marke{font:900 20px/1 var(--f-display);letter-spacing:-.01em;display:flex;align-items:center;gap:10px;text-decoration:none}
+.marke i{display:inline-block;width:12px;height:12px;border-radius:3px;background:var(--signal)}
+.nav nav{display:flex;gap:18px;flex-wrap:wrap;font-size:14px}
+.nav nav a{text-decoration:none;color:var(--leise)}
+.nav nav a:hover{color:var(--tinte)}
+
+/* ---------- Hero ---------- */
+.held{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);gap:48px;align-items:center;padding-block:40px 8px}
+@media (max-width:900px){.held{grid-template-columns:minmax(0,1fr);gap:32px}}
+.held-text{display:grid;gap:22px}
+.held h1{font-size:clamp(56px,10vw,118px);font-weight:900;letter-spacing:-.045em;line-height:.9}
+.held h1 span{color:var(--signal)}
+.these{font-size:clamp(19px,2.3vw,23px);line-height:1.45;max-width:30ch}
+.drei{display:grid;gap:6px;font:500 14px/1.5 var(--f-mono);color:var(--leise)}
+.drei b{color:var(--tinte);font-weight:600}
+.aktionen{display:flex;gap:12px;flex-wrap:wrap}
+.knopf{font:600 15px/1 var(--f-text);padding:14px 18px;border-radius:10px;text-decoration:none;border:1px solid var(--linie);
+  background:var(--flaeche);color:var(--tinte);display:inline-flex;gap:8px;align-items:center;cursor:pointer}
+.knopf.voll{background:var(--tinte);color:var(--bg);border-color:var(--tinte)}
+.knopf:hover{border-color:var(--signal)}
+
+/* Terminal */
+.term{background:var(--term-bg);color:var(--term-tinte);border-radius:16px;overflow:hidden;
+  box-shadow:0 30px 60px -30px rgba(10,30,36,.55);min-width:0}
+.term-kopf{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;
+  border-bottom:1px solid rgba(255,255,255,.08);font:500 12px/1 var(--f-mono);color:var(--term-leise)}
+.takt{display:flex;align-items:center;gap:8px}
+.takt i{width:8px;height:8px;border-radius:50%;background:#ff8a3d}
+@media (prefers-reduced-motion:no-preference){.takt i{animation:takt .5s steps(1) infinite}}
+@keyframes takt{50%{opacity:.25}}
+.term pre{margin:0;padding:16px 18px 18px;font:12.5px/1.75 var(--f-mono);overflow-x:auto;white-space:pre}
+.term .z{color:var(--term-leise)}
+.term .ok{color:#6fd3a6}
+.p{display:inline-block;min-width:66px;text-align:center;font-weight:700;font-size:10.5px;letter-spacing:.06em;
+  border-radius:4px;padding:1px 6px;margin-right:6px;color:#fff}
+.p.k{background:#d6284a}.p.h{background:#e05a22}.p.m{background:#b88300}.p.n{background:#2e74b5}
+.term .neu{color:#ff8a3d}
+.zaehler{font-variant-numeric:tabular-nums}
+
+/* ---------- Wege ---------- */
+.wege{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+@media (max-width:860px){.wege{grid-template-columns:minmax(0,1fr)}}
+.weg{background:var(--flaeche);border:1px solid var(--linie);border-radius:14px;padding:22px;display:grid;gap:12px;align-content:start}
+.weg .art{font:600 12px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--leise)}
+.weg ul{margin:0;padding-left:18px;display:grid;gap:4px;color:var(--leise);font-size:15px}
+.weg .beleg{font:500 12.5px/1.5 var(--f-mono);border-top:1px dashed var(--linie);padding-top:12px;color:var(--tinte)}
+
+/* ---------- Scope-Dokument ---------- */
+.scope{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:32px;align-items:start}
+@media (max-width:900px){.scope{grid-template-columns:minmax(0,1fr)}}
+.datei{background:var(--flaeche);border:1px solid var(--linie);border-radius:14px;overflow:hidden;min-width:0}
+.datei-kopf{font:500 12px/1 var(--f-mono);color:var(--leise);padding:12px 16px;border-bottom:1px solid var(--linie);
+  display:flex;justify-content:space-between;gap:12px}
+.datei pre{margin:0;padding:16px 0;font:13px/1.8 var(--f-mono);overflow-x:auto}
+.datei code{display:block;padding:0 18px;white-space:pre}
+.datei .mk{background:var(--signal-weich);box-shadow:inset 3px 0 0 var(--signal)}
+.datei .kom{color:var(--leise)}
+.datei .sch{color:var(--signal);font-weight:600}
+.notizen{list-style:none;margin:0;padding:0;display:grid;gap:18px;counter-reset:n}
+.notizen li{display:grid;grid-template-columns:30px minmax(0,1fr);gap:12px}
+.notizen li::before{counter-increment:n;content:counter(n);font:700 13px/30px var(--f-mono);text-align:center;
+  width:30px;height:30px;border-radius:50%;background:var(--signal-weich);color:var(--signal)}
+.notizen h3{font-size:17px}
+.notizen p{color:var(--leise);font-size:15px}
+
+/* ---------- Schwere-Skala ---------- */
+.skala{display:grid;gap:0;border-top:1px solid var(--linie)}
+.stufe{display:grid;grid-template-columns:130px minmax(0,1.2fr) minmax(0,1.4fr) 150px;gap:20px;padding:18px 0;
+  border-bottom:1px solid var(--linie);align-items:baseline}
+@media (max-width:860px){.stufe{grid-template-columns:minmax(0,1fr);gap:6px}}
+.stufe .name{font:800 15px/1 var(--f-mono);text-transform:uppercase;letter-spacing:.06em;color:var(--c);
+  display:flex;align-items:center;gap:10px}
+.stufe .name::before{content:"";width:10px;height:10px;border-radius:2px;background:var(--c)}
+.stufe .bsp{font:500 13px/1.5 var(--f-mono)}
+.stufe .geld{font:600 14px/1.4 var(--f-text);color:var(--leise);font-variant-numeric:tabular-nums}
+.s-k{--c:var(--s-kritisch)}.s-h{--c:var(--s-hoch)}.s-m{--c:var(--s-mittel)}.s-n{--c:var(--s-niedrig)}.s-i{--c:var(--s-info)}
+
+/* ---------- Lern-Schleife ---------- */
+.schleife{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:center}
+@media (max-width:900px){.schleife{grid-template-columns:minmax(0,1fr)}}
+.kreis{width:100%;max-width:480px;aspect-ratio:1;justify-self:center}
+.kreis text{font-family:var(--f-text);fill:var(--tinte)}
+.kreis .klein{font-family:var(--f-mono);fill:var(--leise);font-size:11px}
+.regel{background:var(--flaeche);border:1px solid var(--linie);border-radius:12px;padding:16px 18px;display:grid;gap:10px;min-width:0}
+.regel pre{margin:0;font:12.5px/1.6 var(--f-mono);overflow-x:auto;white-space:pre;background:var(--bg);
+  border-radius:8px;padding:10px 12px}
+.pfeil{font:600 12px/1 var(--f-mono);color:var(--signal);letter-spacing:.08em;text-transform:uppercase}
+.schritte{display:grid;gap:14px}
+
+/* ---------- Leitplanken ---------- */
+.planken{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:12px}
+.planke{border-top:3px solid var(--tinte);padding-top:14px;display:grid;gap:6px}
+.planke p{color:var(--leise);font-size:15px}
+.planke .wert{font:600 13px/1.4 var(--f-mono);color:var(--signal)}
+
+/* ---------- Schnellstart ---------- */
+.start{display:grid;gap:12px;max-width:820px}
+.cmd{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:12px;align-items:center;background:var(--flaeche);
+  border:1px solid var(--linie);border-radius:12px;padding:12px 12px 12px 16px}
+.cmd .nr{font:700 13px/1 var(--f-mono);color:var(--leise)}
+.cmd code{font:500 14px/1.5 var(--f-mono);overflow-x:auto;white-space:nowrap;display:block;min-width:0}
+.cmd small{display:block;font:400 13px/1.4 var(--f-text);color:var(--leise);margin-top:2px;white-space:normal}
+.kopieren{font:600 13px/1 var(--f-text);padding:9px 12px;border-radius:8px;border:1px solid var(--linie);background:var(--bg);
+  color:var(--tinte);cursor:pointer}
+.kopieren:hover{border-color:var(--signal)}
+
+.recht{background:var(--signal-weich);border-radius:14px;padding:22px 24px;display:grid;gap:8px;max-width:820px}
+footer{margin-top:72px;padding-top:20px;border-top:1px solid var(--linie);font-size:13px;color:var(--leise);
+  display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<div class="w">
+
+<header class="nav">
+  <a class="marke" href="#start"><i aria-hidden="true"></i>KlausHackt</a>
+  <nav aria-label="Abschnitte">
+    <a href="#wege">Was er prüft</a>
+    <a href="#scope">Scope</a>
+    <a href="#loop">Lern-Loop</a>
+    <a href="#schnellstart">Schnellstart</a>
+    <a href="https://github.com/JayWillLoose/KlausClipper" rel="noopener noreferrer">GitHub</a>
+  </nav>
+</header>
+
+<main id="start">
+
+<div class="held">
+  <div class="held-text">
+    <span class="eb">Schwachstellensuche mit Erlaubnis</span>
+    <h1>Klaus<br>hackt<span>.</span></h1>
+    <p class="these">Du gibst ihm ein Ziel, eine Erlaubnis und zwei Stunden. Er findet die Lücken, bevor es jemand anderes tut, und wird mit jedem Fund besser.</p>
+    <div class="drei">
+      <span><b>Nur mit Erlaubnis.</b> Ohne Scope-Datei startet nichts.</span>
+      <span><b>Nur im Scope.</b> Jede Anfrage wird einzeln geprüft.</span>
+      <span><b>Nie schneller als erlaubt.</b> Standard 2 Anfragen pro Sekunde.</span>
+    </div>
+    <div class="aktionen">
+      <a class="knopf voll" href="#schnellstart">In 5 Minuten starten</a>
+      <a class="knopf" href="https://github.com/JayWillLoose/KlausClipper" rel="noopener noreferrer">Quellcode ansehen</a>
+    </div>
+  </div>
+
+  <figure class="term" style="margin:0" aria-label="Ausschnitt aus einem echten Lauf gegen das mitgelieferte Übungsziel">
+    <div class="term-kopf">
+      <span>klaushackt start --scope scopes/demo.toml --dauer 2h</span>
+      <span class="takt" title="Takt der Anfragen"><i aria-hidden="true"></i><span class="zaehler" id="zaehler">5 / s</span></span>
+    </div>
+<pre><span class="z">08:10:24</span>  Lauf #1 für 'demo-shop' · Zeitbudget 2 h
+<span class="z">08:10:24</span>  Tempo: max. 5 Anfragen/s · nur GET, HEAD, OPTIONS
+<span class="z">08:10:24</span>  ▶ geheimnisse
+          <span class="p k">KRITISCH</span>AWS Access Key <span class="neu">[NEU]</span> <span class="z">static/app.js:2</span>
+          <span class="p h">HOCH</span>Datenbank-URL mit Passwort <span class="neu">[NEU]</span> <span class="z">static/.env:1</span>
+<span class="z">08:10:24</span>  ▶ code_muster · 39 Regeln, 2 davon selbst gelernt
+          <span class="p h">HOCH</span>SQL-Abfrage aus Strings zusammengebaut <span class="z">server.py:75</span>
+          <span class="p h">HOCH</span>Shell-Befehl mit shell=True <span class="z">server.py:36</span>
+          <span class="p m">MITTEL</span>innerHTML-Zuweisung (XSS-Gefahr) <span class="z">static/app.js:5</span>
+<span class="z">08:10:24</span>  ▶ web_passiv · Black-Box, gedrosselt
+          <span class="p k">KRITISCH</span>.env-Datei öffentlich <span class="neu">[NEU]</span> <span class="z">/.env</span>
+          <span class="p h">HOCH</span>CORS akzeptiert jede Website – mit Cookies
+          <span class="p h">HOCH</span>Parameter 'q' wird ungefiltert ausgegeben
+<span class="z">08:10:30</span>  ▶ zugriff · Testkonten anna, ben
+          <span class="p h">HOCH</span>Konto 'ben' sieht Daten von 'anna' <span class="neu">[NEU]</span>
+<span class="z">08:10:31</span>  <span class="ok">Ergebnis: 4 kritisch · 11 hoch · 6 mittel · 8 niedrig</span>
+<span class="z">08:10:31</span>  Bericht: klaushackt-daten/demo-shop/bericht-lauf1.html</pre>
+  </figure>
+</div>
+
+<section id="wege" aria-labelledby="wege-t">
+  <div class="kopf">
+    <span class="eb">Was er prüft</span>
+    <h2 id="wege-t">Drei Wege hinein. Dieselben, die Angreifer nehmen.</h2>
+    <p>Mit Quellcode liest er den Code. Ohne Quellcode prüft er nur das, was jeder Besucher auch sieht. Mit Testkonten prüft er, ob jeder nur seine eigenen Daten bekommt.</p>
+  </div>
+  <div class="wege">
+    <article class="weg">
+      <span class="art">White-Box · mit Quellcode</span>
+      <h3>Der Code wird gelesen</h3>
+      <ul>
+        <li>API-Keys, Passwörter und private Schlüssel im Code</li>
+        <li>SQL- und Befehls-Injection, XSS, SSRF, unsichere Deserialisierung</li>
+        <li>Bibliotheken mit bekannten Lücken (OSV-Datenbank)</li>
+        <li>Claude liest jede geänderte Datei und sucht Logikfehler</li>
+      </ul>
+      <p class="beleg">server.py:75 · f"SELECT name FROM produkte WHERE id = '{…}'"</p>
+    </article>
+    <article class="weg">
+      <span class="art">Black-Box · nur Schnittstellen</span>
+      <h3>Die Seite wird von außen geprüft</h3>
+      <ul>
+        <li>Offene <span class="mono">.env</span>, <span class="mono">.git</span>, Backups und Datenbank-Dumps</li>
+        <li>CORS, Cookies, Sicherheits-Header, Clickjacking</li>
+        <li>Fehlerseiten mit Stacktrace, reflektiertes XSS</li>
+        <li>Geheimnisse und API-Endpunkte im ausgelieferten JavaScript</li>
+      </ul>
+      <p class="beleg">GET /.env → HTTP 200 · DATABASE_URL=post…******6@db.intern</p>
+    </article>
+    <article class="weg">
+      <span class="art">Zugriff · mit Testkonten</span>
+      <h3>Wer sieht wessen Daten?</h3>
+      <ul>
+        <li>Eine Ressource von Konto A wird als Konto B abgerufen</li>
+        <li>…und noch einmal ganz ohne Login</li>
+        <li>Gleiche Antwort heißt kaputte Zugriffskontrolle (IDOR)</li>
+        <li>Nur Testkonten aus dem Scope, nie echte Kunden</li>
+      </ul>
+      <p class="beleg">/api/rechnungen/1001 · anna 200 · ben 200 · Übereinstimmung 100 %</p>
+    </article>
+  </div>
+</section>
+
+<section id="scope" aria-labelledby="scope-t">
+  <div class="kopf">
+    <span class="eb">Die Scope-Datei</span>
+    <h2 id="scope-t">Erst die Erlaubnis, dann der erste Request.</h2>
+    <p>Alles, was ein Bug-Bounty-Programm vorgibt, steht in einer Datei. KlausHackt liest sie vor jedem Lauf und hält sich bei jeder einzelnen Anfrage daran.</p>
+  </div>
+  <div class="scope">
+    <div class="datei">
+      <div class="datei-kopf"><span>scopes/meine-app.toml</span><span>TOML</span></div>
+<pre><code><span class="sch">name</span> = "meine-app"</code><code class="mk"><span class="sch">gueltig_bis</span> = "2027-03-31"</code><code> </code><code>[erlaubnis]</code><code class="mk"><span class="sch">nachweis</span> = "../nachweise/freigabe.pdf"</code><code class="mk"><span class="sch">bestaetigt</span> = true</code><code> </code><code>[ziele]</code><code><span class="sch">urls</span> = ["https://staging.meine-app.de/"]</code><code class="mk"><span class="sch">ausgeschlossen</span> = ["https://staging.meine-app.de/admin"]</code><code> </code><code>[regeln]</code><code class="mk"><span class="sch">anfragen_pro_sekunde</span> = 2</code><code><span class="sch">erlaubte_methoden</span> = ["GET", "HEAD", "OPTIONS"]</code><code> </code><code>[programm.belohnungen]</code><code><span class="sch">kritisch</span> = "1.000–5.000 €"</code><code> </code><code class="mk">[[testkonten]]</code><code><span class="sch">name</span> = "nutzer_a"</code><code><span class="sch">header</span> = { Cookie = "session=…" }</code></pre>
+    </div>
+    <ol class="notizen">
+      <li><div><h3>Läuft ab</h3><p>Jeder Scope hat ein Ablaufdatum. Danach verweigert KlausHackt den Start.</p></div></li>
+      <li><div><h3>Erlaubnis ist Pflicht</h3><p>Nachweis als Datei oder Link zum Programm, plus deine ausdrückliche Bestätigung.</p></div></li>
+      <li><div><h3>Ausgeschlossen heißt ausgeschlossen</h3><p>Host, Port und Pfad werden bei jeder Anfrage geprüft. Weiterleitungen aus dem Scope heraus folgt er nicht.</p></div></li>
+      <li><div><h3>Das Tempo des Programms</h3><p>Viele Programme erlauben 2 bis 10 Anfragen pro Sekunde. KlausHackt bleibt darunter, bremst bei 429 von selbst ab und geht nie über 10.</p></div></li>
+      <li><div><h3>Testkonten statt Kunden</h3><p>Eingeloggte Bereiche werden nur mit Konten geprüft, die im Scope stehen.</p></div></li>
+    </ol>
+  </div>
+</section>
+
+<section aria-labelledby="skala-t">
+  <div class="kopf">
+    <span class="eb">Schweregrade</span>
+    <h2 id="skala-t">Von „gut zu wissen“ bis „sofort handeln“.</h2>
+    <p>Jeder Fund kommt mit Ort, Beleg, Erklärung in normalem Deutsch und einer konkreten Behebung. Steht eine Belohnungstabelle im Scope, rechnet der Bericht sie gleich mit ein.</p>
+  </div>
+  <div class="skala" role="table" aria-label="Schweregrade mit Beispielen">
+    <div class="stufe s-k" role="row"><span class="name" role="cell">Kritisch</span><span role="cell">Übernahme, Datenabfluss oder Zugangsdaten offen.</span><span class="bsp" role="cell">.env öffentlich · Daten ohne Login abrufbar</span><span class="geld" role="cell">1.000–5.000 €*</span></div>
+    <div class="stufe s-h" role="row"><span class="name" role="cell">Hoch</span><span role="cell">Realistisch ausnutzbar.</span><span class="bsp" role="cell">Konto B sieht Rechnungen von Konto A · SQL-Injection</span><span class="geld" role="cell">300–1.000 €*</span></div>
+    <div class="stufe s-m" role="row"><span class="name" role="cell">Mittel</span><span role="cell">Ausnutzbar unter Bedingungen.</span><span class="bsp" role="cell">Stacktrace bei Sonderzeichen · Login per GET</span><span class="geld" role="cell">100–300 €*</span></div>
+    <div class="stufe s-n" role="row"><span class="name" role="cell">Niedrig</span><span role="cell">Härtung, kein direktes Leck.</span><span class="bsp" role="cell">CSP fehlt · target=_blank ohne noopener</span><span class="geld" role="cell">0–100 €*</span></div>
+    <div class="stufe s-i" role="row"><span class="name" role="cell">Info</span><span role="cell">Zur Kenntnis.</span><span class="bsp" role="cell">Server verrät Version · keine security.txt</span><span class="geld" role="cell">–</span></div>
+  </div>
+  <p class="le" style="font-size:13px">* Beispielwerte aus dem Übungs-Scope. Echte Prämien legt jedes Programm selbst fest, und du kannst sie ablehnen oder spenden.</p>
+</section>
+
+<section id="loop" aria-labelledby="loop-t">
+  <div class="kopf">
+    <span class="eb">Der Lern-Loop</span>
+    <h2 id="loop-t">Jeder echte Fund wird zur Suchregel für den nächsten.</h2>
+    <p>Das Modell selbst lernt nicht dazu. Das Gedächtnis um es herum schon: Was du bestätigst, sucht er überall. Was du als Fehlalarm markierst, meldet er nie wieder.</p>
+  </div>
+  <div class="schleife">
+    <svg class="kreis" viewBox="0 0 400 400" role="img" aria-label="Kreislauf: Lauf, Fund, Markierung, neue Regel, Variantensuche, nächster Lauf">
+      <defs>
+        <marker id="spitze" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--signal)"/>
+        </marker>
+      </defs>
+      <circle cx="200" cy="200" r="138" fill="none" stroke="var(--linie)" stroke-width="2"/>
+      <path d="M 200 62 A 138 138 0 0 1 331 157" fill="none" stroke="var(--signal)" stroke-width="2.5" marker-end="url(#spitze)"/>
+      <path d="M 331 243 A 138 138 0 0 1 248 330" fill="none" stroke="var(--signal)" stroke-width="2.5" marker-end="url(#spitze)"/>
+      <path d="M 152 330 A 138 138 0 0 1 69 243" fill="none" stroke="var(--signal)" stroke-width="2.5" marker-end="url(#spitze)"/>
+      <path d="M 69 157 A 138 138 0 0 1 182 63" fill="none" stroke="var(--signal)" stroke-width="2.5" marker-end="url(#spitze)"/>
+      <g>
+        <circle cx="200" cy="62" r="34" fill="var(--flaeche)" stroke="var(--tinte)" stroke-width="2"/>
+        <text x="200" y="67" text-anchor="middle" font-size="14" font-weight="700">Lauf</text>
+        <circle cx="338" cy="200" r="34" fill="var(--flaeche)" stroke="var(--tinte)" stroke-width="2"/>
+        <text x="338" y="205" text-anchor="middle" font-size="14" font-weight="700">Fund</text>
+        <circle cx="200" cy="338" r="34" fill="var(--signal)" stroke="var(--signal)" stroke-width="2"/>
+        <text x="200" y="343" text-anchor="middle" font-size="14" font-weight="700" style="fill:#fff">Du</text>
+        <circle cx="62" cy="200" r="34" fill="var(--flaeche)" stroke="var(--tinte)" stroke-width="2"/>
+        <text x="62" y="205" text-anchor="middle" font-size="14" font-weight="700">Regel</text>
+      </g>
+      <text class="klein" x="300" y="98" text-anchor="middle">findet</text>
+      <text class="klein" x="300" y="306" text-anchor="middle">bestätigen</text>
+      <text class="klein" x="100" y="306" text-anchor="middle">lernt</text>
+      <text class="klein" x="100" y="98" text-anchor="middle">Varianten</text>
+      <text x="200" y="196" text-anchor="middle" font-size="40" font-weight="900" style="font-family:var(--f-display);fill:var(--tinte)">+1</text>
+      <text class="klein" x="200" y="218" text-anchor="middle">Regel pro echtem Fund</text>
+    </svg>
+    <div class="schritte">
+      <div class="regel">
+        <span class="pfeil">Bestätigter Fund · server.py:75</span>
+        <pre>zeile = db.execute(f"SELECT name FROM produkte WHERE id = '{id}'")</pre>
+        <span class="pfeil">↓ wird zur Regel gelernt-330d9535</span>
+        <pre>\w+\s*=\s*\w+\.execute\(\w+["'`][^"'`]*["'`]\)</pre>
+        <span class="pfeil">↓ findet beim nächsten Lauf auch</span>
+        <pre>res = conn.execute(f"DELETE FROM log WHERE tag = '{t}'")</pre>
+      </div>
+      <p class="le">Dazu kommen: Techniken, die oft Echtes finden, laufen zuerst. Unveränderte Dateien werden nicht doppelt von Claude gelesen. Verschwundene Funde gelten als behoben, und kommt einer zurück, steht <span class="mono">WIEDER DA</span> daneben.</p>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="planken-t">
+  <div class="kopf">
+    <span class="eb">Leitplanken</span>
+    <h2 id="planken-t">Was KlausHackt nie macht.</h2>
+  </div>
+  <div class="planken">
+    <div class="planke"><h3>Keine Massenscans</h3><p>Keine Wortlisten, kein Durchprobieren. Eine kleine feste Liste typischer Lecks, sonst nur Seiten, die verlinkt sind.</p><span class="wert">max. 60 Seiten · Budget pro Lauf</span></div>
+    <div class="planke"><h3>Keine Schäden</h3><p>Nur lesende Anfragen. Keine Formulare absenden, nichts löschen, keine Last erzeugen. Bei wiederholten Serverfehlern bricht er ab.</p><span class="wert">GET · HEAD · OPTIONS</span></div>
+    <div class="planke"><h3>Keine echten Nutzerdaten</h3><p>Geheimnisse werden im Bericht maskiert. Zugriffstests laufen nur mit Testkonten.</p><span class="wert">AKIA…******LE</span></div>
+    <div class="planke"><h3>Nichts ohne dich</h3><p>KlausHackt meldet nichts an Firmen oder Plattformen. Du prüfst jeden Fund und entscheidest.</p><span class="wert">Bericht → du → Meldung</span></div>
+    <div class="planke"><h3>Alles nachvollziehbar</h3><p>Jede Anfrage landet mit Zeit, Ziel, Status und Testkonto im Protokoll. Auf Wunsch mit Kennungs-Header für das Programm.</p><span class="wert">anfragen-lauf1.jsonl</span></div>
+    <div class="planke"><h3>Selbst sicher</h3><p>Dashboard nur auf 127.0.0.1, mit Host-Prüfung, CSRF-Token und ohne JavaScript. Berichte escapen jeden Inhalt vom Ziel.</p><span class="wert">16 Tests für die Leitplanken</span></div>
+  </div>
+</section>
+
+<section id="schnellstart" aria-labelledby="start-t">
+  <div class="kopf">
+    <span class="eb">Schnellstart</span>
+    <h2 id="start-t">Fünf Minuten bis zum ersten Bericht.</h2>
+    <p>Das Übungsziel ist eine kleine Web-App mit absichtlich eingebauten Lücken. Sie läuft nur auf deinem Rechner. Du brauchst Python 3.11 oder neuer, sonst nichts.</p>
+  </div>
+  <div class="start">
+    <div class="cmd"><span class="nr">1</span><div style="min-width:0"><code id="c1">git clone https://github.com/JayWillLoose/KlausClipper &amp;&amp; cd KlausClipper</code><small>Projekt holen</small></div><button class="kopieren" data-ziel="c1" type="button">Kopieren</button></div>
+    <div class="cmd"><span class="nr">2</span><div style="min-width:0"><code id="c2">python demo/ziel_app/server.py</code><small>Übungsziel starten (eigenes Terminal)</small></div><button class="kopieren" data-ziel="c2" type="button">Kopieren</button></div>
+    <div class="cmd"><span class="nr">3</span><div style="min-width:0"><code id="c3">python -m klaushackt start --scope scopes/demo.toml --dauer 10m</code><small>Lauf starten: Funde erscheinen live mit Schweregrad</small></div><button class="kopieren" data-ziel="c3" type="button">Kopieren</button></div>
+    <div class="cmd"><span class="nr">4</span><div style="min-width:0"><code id="c4">python -m klaushackt dashboard</code><small>Dashboard öffnen: http://127.0.0.1:8765 · Funde bestätigen und den Loop füttern</small></div><button class="kopieren" data-ziel="c4" type="button">Kopieren</button></div>
+  </div>
+  <div class="recht">
+    <h3>Nur mit Erlaubnis.</h3>
+    <p>KlausHackt ist für eigene Systeme, schriftliche Aufträge und den Scope von Bug-Bounty-Programmen gebaut. Unerlaubtes Testen ist in Deutschland strafbar (§§ 202a ff. StGB). Das gilt auch, wenn es gut gemeint oder unbezahlt ist.</p>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <span>KlausHackt 0.1 · MIT-Lizenz · aus der Klaus-Familie, neben Klaus Clipper</span>
+  <span>Gebaut mit Claude</span>
+</footer>
+</div>
+
+<script>
+// Kopieren-Knöpfe: Zwischenablage, sonst Text markieren
+document.querySelectorAll(".kopieren").forEach(function (b) {
+  b.addEventListener("click", function () {
+    var el = document.getElementById(b.dataset.ziel);
+    var text = el.textContent;
+    function markieren() {
+      var r = document.createRange(); r.selectNodeContents(el);
+      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+      b.textContent = "Markiert";
+    }
+    try {
+      navigator.clipboard.writeText(text).then(function () { b.textContent = "Kopiert"; }, markieren);
+    } catch (e) { markieren(); }
+    setTimeout(function () { b.textContent = "Kopieren"; }, 1800);
+  });
+});
+// Takt-Anzeige: zählt Anfragen im Tempo des Scopes (5 pro Sekunde)
+(function () {
+  var z = document.getElementById("zaehler");
+  if (!z || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  var n = 0;
+  setInterval(function () { n = Math.min(n + 1, 500); z.textContent = n + " Anfragen · 5/s"; }, 200);
+})();
+</script>
+</body>
+</html>

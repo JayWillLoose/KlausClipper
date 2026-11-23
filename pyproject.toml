@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "klaushackt"
+version = "0.1.0"
+description = "Autorisierte, rate-limitierte Schwachstellensuche mit Lern-Loop – White-Box und Black-Box."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+dependencies = []
+
+[project.optional-dependencies]
+ki = ["anthropic"]
+werkzeuge = ["semgrep", "bandit"]
+
+[project.scripts]
+klaushackt = "klaushackt.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["klaushackt*"]

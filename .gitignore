@@ -1,0 +1,12 @@
+# Gedächtnis, Berichte, Protokolle – können sensible Funde enthalten
+klaushackt-daten/
+nachweise/*
+!nachweise/.gitkeep
+
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+.env
+!demo/ziel_app/static/.env

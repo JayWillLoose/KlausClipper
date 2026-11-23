@@ -1,0 +1,49 @@
+# Scope für das mitgelieferte Übungsziel (demo/ziel_app).
+# Starte zuerst das Ziel:   python demo/ziel_app/server.py
+# Dann KlausHackt:          python -m klaushackt start --scope scopes/demo.toml --dauer 10m
+
+name = "demo-shop"
+gueltig_ab = "2026-01-01"
+gueltig_bis = "2030-12-31"
+
+[erlaubnis]
+beschreibung = "Eigenes, absichtlich unsicheres Übungsziel aus diesem Repository (läuft nur lokal)."
+bestaetigt = true
+
+[ziele]
+repos = ["../demo/ziel_app"]
+urls = ["http://127.0.0.1:8088/"]
+ausgeschlossen = ["http://127.0.0.1:8088/logout"]
+
+[regeln]
+anfragen_pro_sekunde = 5
+max_anfragen_gesamt = 500
+erlaubte_methoden = ["GET", "HEAD", "OPTIONS"]
+verboten = ["dos", "social_engineering", "echte_nutzerdaten"]
+
+[regeln.header]
+"X-Bug-Bounty" = "klaushackt-demo"
+
+[programm]
+plattform = "eigenes Projekt"
+
+[programm.belohnungen]
+kritisch = "1.000–5.000 € (Beispiel)"
+hoch = "300–1.000 € (Beispiel)"
+mittel = "100–300 € (Beispiel)"
+niedrig = "0–100 € (Beispiel)"
+
+[[testkonten]]
+name = "anna"
+rolle = "kundin"
+header = { Cookie = "session=anna-sitzung-123" }
+
+[[testkonten]]
+name = "ben"
+rolle = "kunde"
+header = { Cookie = "session=ben-sitzung-456" }
+
+[[zugriff_pruefung]]
+url = "http://127.0.0.1:8088/api/rechnungen/1001"
+besitzer = "anna"
+beschreibung = "Annas Rechnung inkl. IBAN – darf nur Anna sehen."

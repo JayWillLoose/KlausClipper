@@ -24,3 +24,19 @@
 - **„Lernen“:** Das Modell selbst trainiert nicht weiter. Das System lernt über
   Wissensdatenbank, App-Karte, Variantensuche (aus jedem Bug wird eine Suchregel),
   Abdeckungsmessung, Fokus auf Änderungen, Regressionstests.
+
+# Zweites Gespräch (23.11.2026, am PC)
+
+## Wünsche
+- Ute-Fischer-Seite (One-Pager, soll verkauft werden) komplett auf Sicherheitslücken prüfen und fixen.
+- Daraus ein Tool bauen („ClaudeHackt“ → umgesetzt als **KlausHackt**, Markengründe), das mit und ohne
+  Quellcode prüft, alle Bug-Bounty-Regeln einhält (Scope, Ausschlüsse, Rate-Limit, Testkonten,
+  Belohnungstabelle), per Zeitbudget läuft („2 Stunden“) und Funde von niedrig bis kritisch sortiert.
+- Eine coole Website dazu, für GitHub. Look: „wie ein Hacker-Tool, aber aus Spaß“, eigene Farbwelt.
+- Nebenbei: Klaus Clipper nur über die Schnittstellen (Black-Box) testen.
+
+## Ergebnis
+- KlausHackt gebaut (7 Prüfer, Dashboard, Berichte, Lern-Loop, 16 Tests), gegen Übungsziel getestet:
+  32 Funde in 6 Sekunden, darunter IDOR (fremde Rechnung mit IBAN), offene .env, CORS mit Cookies, XSS.
+- Ute-Fischer-Seite: nicht auffindbar (kein Repo, kein Artifact) → Nutzer muss sie bereitstellen.
+- Klaus Clipper: läuft lokal beim Nutzer → Test muss dort laufen (siehe CLAUDE.md).

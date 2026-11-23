@@ -1,0 +1,30 @@
+# Black-Box-Test von Klaus Clipper: nur über die Schnittstellen, ohne Quellcode.
+# Klaus läuft auf deinem PC. Starte zuerst Klaus, trage unten den richtigen Port ein und dann:
+#
+#   python -m klaushackt start --scope scopes/klaus-clipper.toml --dauer 30m --nur web,zugriff
+#
+# Tipp: Klaus wird auch vom Handy gesteuert. Dann lauscht das Dashboard vermutlich im WLAN.
+# Trag zusätzlich die WLAN-Adresse ein (z. B. http://192.168.178.23:<port>/), um zu prüfen,
+# was jeder im selben Netz sehen und auslösen könnte.
+
+name = "klaus-clipper"
+gueltig_ab = "2026-11-23"
+gueltig_bis = "2027-11-23"
+
+[erlaubnis]
+beschreibung = "Eigenes Projekt von Jayson (Klaus Clipper), Black-Box-Test auf dem eigenen PC."
+bestaetigt = true
+
+[ziele]
+repos = []                                  # absichtlich leer: kein Quellcode, nur Schnittstellen
+urls = ["http://127.0.0.1:8000/"]           # ← Port von Klaus' Dashboard anpassen
+ausgeschlossen = []                         # z. B. Endpunkte, die posten oder löschen
+
+[regeln]
+anfragen_pro_sekunde = 2
+max_anfragen_gesamt = 600
+erlaubte_methoden = ["GET", "HEAD", "OPTIONS"]   # nichts freigeben, posten oder löschen
+verboten = ["dos", "echte_posts", "echte_nutzerdaten"]
+
+[programm]
+plattform = "eigenes Projekt"
