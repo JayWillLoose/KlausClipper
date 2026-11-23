@@ -27,48 +27,79 @@ SCHWERE_TEXT = {
 }
 
 CSS = """
-:root{--bg:#f4f5f2;--fl:#fff;--ti:#0c1117;--le:#5a6470;--li:#dfe3e0;--ak:#0b8f5a;
---kritisch:#c81e3a;--hoch:#e0531f;--mittel:#c98a00;--niedrig:#2f7dc0;--info:#7b8590;color-scheme:light}
-@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#07090c;--fl:#0f141a;--ti:#e7ece9;
---le:#8b96a0;--li:#1e2730;--ak:#57f2a6;--kritisch:#ff4d6a;--hoch:#ff7a45;--mittel:#ffc233;--niedrig:#5aa9ff;
---info:#8b96a0;color-scheme:dark}}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ti);
-font:15px/1.6 Inter,system-ui,-apple-system,sans-serif;padding:32px max(16px,4vw) 64px}
-.w{max-width:980px;margin:0 auto;display:grid;gap:28px}
-h1,h2,h3{margin:0;line-height:1.15;letter-spacing:-.01em}h1{font-size:clamp(30px,5vw,46px);font-weight:800}
-h2{font-size:22px}h3{font-size:16px}
-.mono,code,pre{font-family:"JetBrains Mono",ui-monospace,Menlo,monospace}
-.eb{font:600 11px/1 "JetBrains Mono",ui-monospace,monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--ak)}
+/* Bewusst nur dunkel: Terminal-Look. Alle Farben explizit. */
+:root{--bg:#090c11;--fl:#0f141c;--fl2:#131a24;--ti:#d9e1e8;--le:#7f8b99;--li:#1c2531;--ak:#2bff8f;--pink:#ff5fd2;
+--cyan:#3ee8ff;--kritisch:#ff2d6f;--hoch:#ff8a1f;--mittel:#ffd21f;--niedrig:#3ee8ff;--info:#8692a1;
+--mono:"JetBrains Mono","Cascadia Code","Fira Code",ui-monospace,Menlo,Consolas,monospace;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ti);font:15px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif;
+padding:32px max(16px,4vw) 64px;
+background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.018) 0 1px,transparent 1px 3px),
+radial-gradient(1200px 500px at 85% -10%,rgba(43,255,143,.07),transparent 60%)}
+.w{max-width:1000px;margin:0 auto;display:grid;gap:28px}
+h1,h2,h3{margin:0;line-height:1.2;font-family:var(--mono)}
+h1{font-size:clamp(26px,4.4vw,40px);font-weight:700;color:#fff;letter-spacing:-.02em}
+h1::before{content:"> ";color:var(--ak)}
+h1::after{content:"_";color:var(--ak);margin-left:2px}
+@media (prefers-reduced-motion:no-preference){h1::after{animation:cursor 1.1s steps(1) infinite}}
+@keyframes cursor{50%{opacity:0}}
+h2{font-size:20px}h3{font-size:15px;font-weight:600;color:#fff}
+.mono,code,pre{font-family:var(--mono)}
+.logo{margin:0;font:600 11px/1.3 var(--mono);color:var(--ak);background:none;border:0;padding:0;
+white-space:pre;overflow-x:auto;text-shadow:0 0 12px rgba(43,255,143,.35)}
+.logo::before{content:none}
+.eb{font:600 11.5px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ak)}
+.eb::before{content:"[>] ";color:var(--pink)}
 .le{color:var(--le)}
-.kacheln{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
-.kachel{background:var(--fl);border:1px solid var(--li);border-radius:12px;padding:14px 16px;display:grid;gap:2px}
-.kachel b{font:800 32px/1 Inter,system-ui,sans-serif}.kachel span{font-size:12px;color:var(--le);text-transform:uppercase;letter-spacing:.08em}
-.k-kritisch b{color:var(--kritisch)}.k-hoch b{color:var(--hoch)}.k-mittel b{color:var(--mittel)}
-.k-niedrig b{color:var(--niedrig)}.k-info b{color:var(--info)}
-.fund{background:var(--fl);border:1px solid var(--li);border-left:4px solid var(--c,var(--li));
-border-radius:10px;padding:16px 18px;display:grid;gap:8px}
-.fund summary{cursor:pointer;list-style:none;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.kacheln{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.kachel{background:var(--fl);border:1px solid var(--li);border-radius:6px;padding:14px 16px;display:grid;gap:6px;
+position:relative;overflow:hidden}
+.kachel b{font:700 34px/1 var(--mono)}.kachel span{font:600 11px/1 var(--mono);color:var(--le);text-transform:uppercase;letter-spacing:.1em}
+.kachel i{display:block;height:4px;background:var(--li);border-radius:2px;overflow:hidden}
+.kachel i::after{content:"";display:block;height:100%;width:var(--w,0%);background:var(--c)}
+.k-kritisch{--c:var(--kritisch)}.k-hoch{--c:var(--hoch)}.k-mittel{--c:var(--mittel)}.k-niedrig{--c:var(--niedrig)}.k-info{--c:var(--info)}
+.kachel b{color:var(--c)}
+.k-kritisch{box-shadow:inset 0 0 0 1px rgba(255,45,111,.35),0 0 24px -10px rgba(255,45,111,.6)}
+.fund{background:var(--fl);border:1px solid var(--li);border-left:3px solid var(--c,var(--li));
+border-radius:6px;padding:14px 18px;display:grid;gap:10px}
+.fund[open]{background:var(--fl2)}
+.fund summary{cursor:pointer;list-style:none;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .fund summary::-webkit-details-marker{display:none}
-.pill{font:700 11px/1 "JetBrains Mono",monospace;text-transform:uppercase;letter-spacing:.08em;padding:5px 8px;
-border-radius:6px;color:#fff;background:var(--c)}
-.tag{font:500 11px/1 "JetBrains Mono",monospace;padding:4px 7px;border-radius:6px;border:1px solid var(--li);color:var(--le)}
+.fund summary::before{content:"+";font:700 14px/1 var(--mono);color:var(--le);width:12px}
+.fund[open] summary::before{content:"−"}
+.pill{font:700 10.5px/1 var(--mono);text-transform:uppercase;letter-spacing:.1em;padding:5px 8px;
+border-radius:3px;color:var(--c);border:1px solid var(--c);background:transparent;min-width:84px;text-align:center}
+.s-kritisch .pill{background:var(--kritisch);color:#fff;border-color:var(--kritisch)}
+.tag{font:500 11px/1 var(--mono);padding:4px 7px;border-radius:3px;border:1px solid var(--li);color:var(--le)}
 .tag.neu{border-color:var(--ak);color:var(--ak)}
-.ort{font:500 12px/1.4 "JetBrains Mono",monospace;color:var(--le);word-break:break-all}
-pre{background:var(--bg);border:1px solid var(--li);border-radius:8px;padding:10px 12px;margin:0;
-white-space:pre-wrap;word-break:break-word;font-size:12.5px}
+.ort{font:500 12px/1.4 var(--mono);color:var(--cyan);word-break:break-all}
+.ort::before{content:"└─ ";color:var(--le)}
+pre{background:#05070a;border:1px solid var(--li);border-radius:4px;padding:10px 12px;margin:0;
+white-space:pre-wrap;word-break:break-word;font-size:12.5px;color:#c6f7da}
+pre::before{content:"$ ";color:var(--pink)}
 dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 14px;margin:0}
-dt{font:600 11px/1.9 "JetBrains Mono",monospace;text-transform:uppercase;letter-spacing:.06em;color:var(--le)}
+dt{font:600 11px/1.9 var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--le)}
 dd{margin:0}
 table{border-collapse:collapse;width:100%;font-size:14px}th,td{text-align:left;padding:8px 10px 8px 0;
-border-bottom:1px solid var(--li);vertical-align:top}th{font:600 11px "JetBrains Mono",monospace;
-text-transform:uppercase;letter-spacing:.06em;color:var(--le)}
+border-bottom:1px dashed var(--li);vertical-align:top}th{font:600 11px var(--mono);
+text-transform:uppercase;letter-spacing:.08em;color:var(--le)}
 .s-kritisch{--c:var(--kritisch)}.s-hoch{--c:var(--hoch)}.s-mittel{--c:var(--mittel)}.s-niedrig{--c:var(--niedrig)}.s-info{--c:var(--info)}
-footer{font-size:12px;color:var(--le);border-top:1px solid var(--li);padding-top:14px}
+footer{font:12px/1.6 var(--mono);color:var(--le);border-top:1px dashed var(--li);padding-top:14px}
+footer::before{content:"// ";color:var(--pink)}
 .btns{display:flex;gap:8px;flex-wrap:wrap}
-.btns button{font:600 13px Inter,system-ui,sans-serif;padding:7px 12px;border-radius:8px;border:1px solid var(--li);
-background:var(--fl);color:var(--ti);cursor:pointer}.btns button:hover{border-color:var(--ak)}
+.btns button{font:600 12.5px var(--mono);padding:7px 12px;border-radius:4px;border:1px solid var(--li);
+background:#05070a;color:var(--ti);cursor:pointer}.btns button:hover{border-color:var(--ak);color:var(--ak)}
+.btns button:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid var(--ak);outline-offset:2px}
 a{color:var(--ak)}
 """
+
+LOGO = "\n".join([
+    r" _  ___                 _   _            _    _   ",
+    r"| |/ / | __ _ _   _ ___| | | | __ _  ___| | _| |_ ",
+    r"| ' /| |/ _` | | | / __| |_| |/ _` |/ __| |/ / __|",
+    r"| . \| | (_| | |_| \__ \  _  | (_| | (__|   <| |_ ",
+    r"|_|\_\_|\__,_|\__,_|___/_| |_|\__,_|\___|_|\_\\__|",
+])
 
 
 def fund_html(f, mit_knoepfen: str = "") -> str:
@@ -110,7 +141,9 @@ def schreibe_berichte(wissen, scope, lauf: int, ordner: Path, min_schwere: str,
     dauer = int((lauf_row["ende"] or lauf_row["start"]) - lauf_row["start"])
     gelernte = len(wissen.gelernte_regeln())
 
-    kacheln = "".join(f'<div class="kachel k-{s}"><b>{zaehler.get(s, 0)}</b><span>{s}</span></div>'
+    maximum = max(zaehler.values(), default=0) or 1
+    kacheln = "".join(f'<div class="kachel k-{s}" style="--w:{round(zaehler.get(s, 0) / maximum * 100)}%">'
+                      f'<b>{zaehler.get(s, 0)}</b><span>{s}</span><i></i></div>'
                       for s in reversed(SCHWEREGRADE))
     belohnung = ""
     if scope.belohnungen:
@@ -137,7 +170,7 @@ def schreibe_berichte(wissen, scope, lauf: int, ordner: Path, min_schwere: str,
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:">
 <title>KlausHackt · {E(scope.name)} · Lauf {lauf}</title><style>{CSS}</style></head><body><div class="w">
-<header style="display:grid;gap:10px"><span class="eb">KlausHackt-Bericht · Lauf #{lauf}</span>
+<header style="display:grid;gap:12px"><pre class="logo">{E(LOGO)}</pre><span class="eb">KlausHackt-Bericht · Lauf #{lauf}</span>
 <h1>{E(scope.name)}</h1>
 <p class="le">{start:%d.%m.%Y %H:%M} · {dauer // 60} min {dauer % 60} s · {anfragen} Anfragen an das Ziel
 (max. {scope.anfragen_pro_sekunde:g}/s) · {gelernte} gelernte Regeln im Gedächtnis</p></header>

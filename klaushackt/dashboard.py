@@ -17,7 +17,7 @@ import secrets
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlencode, urlsplit
 
-from klaushackt.bericht import CSS, fund_html
+from klaushackt.bericht import CSS, LOGO, fund_html
 from klaushackt.fund import SCHWEREGRADE, rang
 from klaushackt.pruefer.ki import lerne_regeln
 from klaushackt.wissen import Wissen
@@ -25,14 +25,17 @@ from klaushackt.wissen import Wissen
 E = html.escape
 TOKEN = secrets.token_urlsafe(24)
 EXTRA_CSS = """
-nav{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-nav a,nav span{font:600 13px Inter,system-ui,sans-serif;padding:6px 11px;border-radius:999px;border:1px solid var(--li);
-text-decoration:none;color:var(--ti)}nav a.an{border-color:var(--ak);color:var(--ak)}
-.live{display:flex;gap:10px;align-items:center}.punkt{width:10px;height:10px;border-radius:50%;background:var(--ak);
+nav{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+nav a,nav span{font:600 12px var(--mono);padding:6px 10px;border-radius:3px;border:1px solid var(--li);
+text-decoration:none;color:var(--le);background:#05070a}nav a:hover{color:var(--ti);border-color:var(--le)}
+nav a.an{border-color:var(--ak);color:var(--ak);box-shadow:0 0 14px -6px var(--ak)}
+nav a.an::before{content:"● ";font-size:9px;vertical-align:1px}
+.live{display:flex;gap:10px;align-items:center}.punkt{width:9px;height:9px;border-radius:50%;background:var(--ak);
 box-shadow:0 0 0 0 var(--ak);animation:p 1.6s infinite}@keyframes p{70%{box-shadow:0 0 0 10px transparent}}
-@media (prefers-reduced-motion:reduce){.punkt{animation:none}}
-.ereignisse{font:12.5px/1.7 "JetBrains Mono",monospace;background:var(--fl);border:1px solid var(--li);
-border-radius:10px;padding:12px 14px;max-height:340px;overflow:auto}
+@media (prefers-reduced-motion:reduce){.punkt,h1::after{animation:none}}
+.ereignisse{font:12.5px/1.7 var(--mono);background:#05070a;border:1px solid var(--li);color:#b9f5d2;
+border-radius:4px;padding:12px 14px;max-height:340px;overflow:auto;box-shadow:inset 0 0 40px rgba(43,255,143,.04)}
+.ereignisse::before{content:"klaus@hackt:~$ tail -f lauf.log";display:block;color:var(--pink);margin-bottom:6px}
 form{display:inline}
 """
 
@@ -42,8 +45,9 @@ def _seite(titel: str, inhalt: str, auffrischen: bool = False) -> bytes:
     return f"""<!doctype html><html lang="de"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">{meta}
 <title>{E(titel)}</title><style>{CSS}{EXTRA_CSS}</style></head><body><div class="w">
-<header style="display:grid;gap:8px"><span class="eb">KlausHackt · Dashboard</span><h1>{E(titel)}</h1></header>
-{inhalt}<footer>Läuft nur lokal auf 127.0.0.1. Markierungen trainieren den Lern-Loop.</footer>
+<header style="display:grid;gap:10px"><pre class="logo">{E(LOGO)}</pre>
+<span class="eb">Dashboard · nur lokal</span><h1>{E(titel)}</h1></header>
+{inhalt}<footer>läuft nur auf 127.0.0.1 · jede markierung füttert den lern-loop</footer>
 </div></body></html>""".encode()
 
 
@@ -153,8 +157,10 @@ class Handler(BaseHTTPRequestHandler):
 
         alle = self.wissen.funde(scope=scope)
         zaehler = {s: sum(1 for f in alle if f["schwere"] == s and f["status"] in ("neu", "bestaetigt")) for s in SCHWEREGRADE}
+        maximum = max(zaehler.values(), default=0) or 1
         kacheln = '<div class="kacheln">' + "".join(
-            f'<div class="kachel k-{s}"><b>{zaehler[s]}</b><span>{s} offen</span></div>' for s in reversed(SCHWEREGRADE)) + "</div>"
+            f'<div class="kachel k-{s}" style="--w:{round(zaehler[s] / maximum * 100)}%"><b>{zaehler[s]}</b>'
+            f'<span>{s} offen</span><i></i></div>' for s in reversed(SCHWEREGRADE)) + "</div>"
 
         if status == "offen":
             gefiltert = [f for f in alle if f["status"] in ("neu", "bestaetigt")]

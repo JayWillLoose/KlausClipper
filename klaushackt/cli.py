@@ -11,14 +11,44 @@ from klaushackt import __version__
 from klaushackt.fund import SCHWEREGRADE
 from klaushackt.scope import ScopeFehler, lade_scope
 
-BANNER = r"""
-  _  ___                 _   _            _    _
- | |/ / | __ _ _   _ ___| | | | __ _  ___| | _| |_
- | ' /| |/ _` | | | / __| |_| |/ _` |/ __| |/ / __|
- | . \| | (_| | |_| \__ \  _  | (_| | (__|   <| |_
- |_|\_\_|\__,_|\__,_|___/_| |_|\__,_|\___|_|\_\\__|
-   autorisierte Schwachstellensuche mit Lern-Loop
-"""
+BANNER = [
+    r" _  ___                 _   _            _    _   ",
+    r"| |/ / | __ _ _   _ ___| | | | __ _  ___| | _| |_ ",
+    r"| ' /| |/ _` | | | / __| |_| |/ _` |/ __| |/ / __|",
+    r"| . \| | (_| | |_| \__ \  _  | (_| | (__|   <| |_ ",
+    r"|_|\_\_|\__,_|\__,_|___/_| |_|\__,_|\___|_|\_\\__|",
+]
+GLITCH = "#@$%&*!?<>/\\|=+~^01"
+VERLAUF = [48, 49, 50, 51, 45]  # grün → cyan, Zeile für Zeile
+
+
+def zeige_banner(animiert: bool) -> None:
+    """Banner mit kurzem Glitch-Effekt (< 1 s), nur im echten Terminal."""
+    import random
+    import time
+
+    from klaushackt.planer import Optik
+
+    o = Optik.automatisch()
+    if o.farbe and animiert:
+        hoehe = len(BANNER)
+        for i, anteil in enumerate((0.55, 0.3, 0.12, 0.0)):
+            if i:
+                sys.stdout.write(f"\033[{hoehe}A")
+            for nr, zeile in enumerate(BANNER):
+                zeichen = [random.choice(GLITCH) if c != " " and random.random() < anteil else c for c in zeile]
+                versatz = " " * random.choice((0, 0, 1)) if anteil else ""
+                farbe = 205 if anteil > 0.4 and nr % 2 else VERLAUF[nr]
+                sys.stdout.write("\r  " + o.f(versatz + "".join(zeichen) + " ", farbe, fett=True) + "\033[K\n")
+            sys.stdout.flush()
+            time.sleep(0.14)
+    else:
+        for nr, zeile in enumerate(BANNER):
+            print("  " + o.f(zeile, VERLAUF[nr], fett=True))
+    print("  " + o.f(f"v{__version__}", 205, fett=True) + o.dim("  ·  autorisierte schwachstellensuche mit lern-loop"))
+    print("  " + o.f("root@klaus", 48) + o.dim(":") + o.f("~", 51) + o.dim("$ ") +
+          "./hackt --nur-mit-erlaubnis  " + o.dim("# versprochen."))
+    print()
 
 VORLAGE = '''# KlausHackt-Scope: Was darf getestet werden – und was nicht.
 # Ohne gültigen Scope startet KlausHackt keinen einzigen Test.
@@ -84,10 +114,10 @@ def cmd_start(args) -> int:
     except (ScopeFehler, ValueError) as e:
         print(f"✗ {e}", file=sys.stderr)
         return 2
-    if not args.ruhig:
-        print(BANNER)
-    nur = set(args.nur.split(",")) if args.nur else None
     farbe = sys.stdout.isatty() and not os.environ.get("NO_COLOR")
+    if not args.ruhig:
+        zeige_banner(animiert=farbe)
+    nur = set(args.nur.split(",")) if args.nur else None
     Lauf(scope, _wissen(args), Path(args.daten), dauer, args.min_schwere, ki=args.ki, nur=nur, farbe=farbe).starte()
     return 0
 
@@ -193,5 +223,11 @@ def main(argv: list[str] | None = None) -> int:
     l.add_argument("--scope", required=True)
     l.set_defaults(f=cmd_lernen)
 
+    # Sonderzeichen (✔, █, ║) dürfen auf alten Windows-Codepages nicht abstürzen
+    for strom in (sys.stdout, sys.stderr):
+        try:
+            strom.reconfigure(errors="replace")
+        except (AttributeError, ValueError):
+            pass
     args = p.parse_args(argv)
     return args.f(args)
