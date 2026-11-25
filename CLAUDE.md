@@ -56,6 +56,10 @@ robustes Ziel → kein Bruch bis 37/s; schwaches Ziel → Knie bei 18/s (Latenz 
 - **Modellwechsel**: Ich kann das Modell NICHT selbst umschalten (nur der Nutzer via `/model`). Der kurze
   Wechsel auf Opus 4.8 war ein automatischer System-Fallback, keine eigene Wahl.
 - **Ute-Fischer-Seite**: weiterhin nicht auffindbar; Nutzer muss Repo/Link/Dateien liefern.
+- **Code Mode (experimentell, Tipp aus Reel von @ai.lution)**: Variable `CLAUDE_CODE_EXPERIMENTAL_CODE_MODE` gibt es
+  wirklich (geprüft in 2.1.332). Läuft NICHT in Cloud-/Remote-Sessions (Claude Code lehnt ab), nur im Terminal,
+  bei `claude -p` (dann nur über `--settings '{"env":{...:"1"}}'`) und im Agent SDK; Windows braucht Git Bash.
+  Messung → `tools/code_mode_vergleich.ps1` auf dem PC des Nutzers laufen lassen, Ergebnis hier eintragen.
 - OSV-API ist aus der Cloud blockiert; auf dem PC des Nutzers funktioniert sie.
 
 ## Weitere Dokumente
