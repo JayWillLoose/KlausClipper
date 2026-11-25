@@ -59,6 +59,8 @@ robustes Ziel → kein Bruch bis 37/s; schwaches Ziel → Knie bei 18/s (Latenz 
 - **Code Mode (experimentell, Tipp aus Reel von @ai.lution)**: Variable `CLAUDE_CODE_EXPERIMENTAL_CODE_MODE` gibt es
   wirklich (geprüft in 2.1.332). Läuft NICHT in Cloud-/Remote-Sessions (Claude Code lehnt ab), nur im Terminal,
   bei `claude -p` (dann nur über `--settings '{"env":{...:"1"}}'`) und im Agent SDK; Windows braucht Git Bash.
+  Kein Schalter in /config: Variable setzen, dann fragt `claude` im Terminal beim Start „Yes, turn on Code Mode“.
+  Nicht in der Claude-Desktop-App. Desktop Commander läuft in der Cloud-Box, NICHT auf dem PC des Nutzers.
   Messung → `tools/code_mode_vergleich.ps1` auf dem PC des Nutzers laufen lassen, Ergebnis hier eintragen.
 - OSV-API ist aus der Cloud blockiert; auf dem PC des Nutzers funktioniert sie.
 
