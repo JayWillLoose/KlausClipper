@@ -70,6 +70,8 @@ Recherche darf/soll weitergehen (Nutzer wünscht ausdrücklich ausführliche Rec
 ## Weitere Dokumente
 
 - `docs/DOMAIN_RECHERCHE.md` – Domains, Server, Abrechnung, Recht für die Webseiten-Firma
+- `docs/SERVER_UND_MAIL_RECHERCHE.md` – Gratis-Start (Cloudflare Pages/Oracle), Umzugsplan, Kapazität,
+  Plattform „wie Lieferando“ (Annahme: „Larendo“ = Lieferando, unbestätigt), Firmen-Mail (Workspace/Zoho/Routing)
 
 - `docs/RECHERCHE.md` – Tool-Recherche mit Quellen
 - `docs/ARCHITEKTUR.md` – ursprünglicher Plan
