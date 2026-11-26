@@ -58,7 +58,18 @@ robustes Ziel → kein Bruch bis 37/s; schwaches Ziel → Knie bei 18/s (Latenz 
 - **Ute-Fischer-Seite**: weiterhin nicht auffindbar; Nutzer muss Repo/Link/Dateien liefern.
 - OSV-API ist aus der Cloud blockiert; auf dem PC des Nutzers funktioniert sie.
 
+## Neues Vorhaben: eigene Webseiten-Firma (Stand 26.11.2026)
+
+Nutzer + Kumpel wollen Webseiten verkaufen. Eine Hauptdomain (Arbeitstitel **„Klaus Gard“**), alle
+Kundenseiten auf **unseren** Servern, Abrechnung komplett über **uns** („wir sind die Hauptdarsteller“).
+Recherche: `docs/DOMAIN_RECHERCHE.md`. Kernplan: Domain-Reseller (INWX) statt DENIC-Mitgliedschaft,
+Hetzner/Netcup + Coolify (Auto-SSL), Blesta/Invoice Ninja fürs Abo, später Cloudflare for SaaS.
+`klausgard.de/.com` waren am 26.11. frei – **nichts kaufen ohne ausdrückliches OK des Nutzers.**
+Recherche darf/soll weitergehen (Nutzer wünscht ausdrücklich ausführliche Recherche).
+
 ## Weitere Dokumente
+
+- `docs/DOMAIN_RECHERCHE.md` – Domains, Server, Abrechnung, Recht für die Webseiten-Firma
 
 - `docs/RECHERCHE.md` – Tool-Recherche mit Quellen
 - `docs/ARCHITEKTUR.md` – ursprünglicher Plan
